@@ -1,0 +1,564 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Moderne Integration Tests mit Testcontainers</title><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" name="viewport"><link href="reveal.js-3.9.2/css/reveal.css" rel="stylesheet"><link href="reveal.js-3.9.2/plugin/title-footer/title-footer.css" rel="stylesheet"><link rel="stylesheet" href="reveal.js-3.9.2/css/theme/anderscore.css" id="theme"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css"><style>/* Stylesheet for CodeRay to match GitHub theme | MIT License | http://foundation.zurb.com */
+pre.CodeRay{background:#f7f7f8}
+.CodeRay .line-numbers{border-right:1px solid currentColor;opacity:.35;padding:0 .5em 0 0}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.75em}
+.CodeRay .line-numbers strong{color:#000}
+table.CodeRay{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.CodeRay td{vertical-align:top;line-height:inherit}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.code{padding:0 0 0 .75em}
+.CodeRay .debug{color:#fff !important;background:#000080 !important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:#000080}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:#008080}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:#008080}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:#008080}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword {color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:#008080}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}</style><link href="reveal.js-3.9.2/lib/css/zenburn.css" rel="stylesheet"><script>document.write( '<link rel="stylesheet" href="reveal.js-3.9.2/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );</script></head><body><div class="reveal"><div class="slides"><section id="_moderne_integration_tests_mit_testcontainers" class="center text-center"><h2>Moderne Integration Tests mit Testcontainers</h2><div class="paragraph margin-bottom-default"><p><span class="image"><img src="images/DWX.jpg.webp" alt="DWX.jpg" width="2000" height="250"></span></p></div>
+<div class="paragraph"><p><span class="image"><img src="images/anderscore/anderScore_white.jpg" alt="anderScore white" height="150"></span></p></div>
+<div class="openblock social-media"><div class="content"><div class="paragraph"><p><span class="image"><img src="images/social/twitter.png" alt="twitter" height="30"></span>
+@anderScoreGmbH
+<span class="image"><img src="images/social/facebook.png" alt="facebook" height="30"></span>
+anderScore.company
+<span class="image"><img src="images/social/meetup.svg" alt="meetup" height="30"></span>
+Java_Meetup_anderscore</p></div></div></div></section>
+<section id="_zur_unserer_person" class="columns text-center"><h2>Zur unserer Person</h2><div class="imageblock" style=""><img src="images/dkraemer.jpg" alt="dkraemer" height="700"></div>
+<div class="openblock"><div class="content"><div class="ulist"><ul><li><p><strong>Daniel Krämer</strong></p><div class="ulist"><ul><li><p>Senior Software Engineer, Architekt</p></li><li><p>Integration und Migration</p></li><li><p>Testautomatisierung</p></li><li><p>DevOps</p></li><li><p><span class="image"><img src="images/social/github.png" alt="github" width="30" height="30"></span> dkraemer-anderscore</p></li></ul></div></li></ul></div></div></div></section>
+<section id="_unternehmen"><h2>Unternehmen</h2><div class="paragraph"><p>
+<head>
+<style>
+	span.r {
+		color:#225c4d;
+	}
+	ul.bullet li::before{
+  		content: "\25CF";
+  		color: #225c4d;
+  		display: inline-block;
+  		margin-right: 20px;
+	}
+	ul.checkmark li::before{
+  		content: "\2714";
+  		color: #225c4d;
+  		display: inline-block;
+  		margin-right: 11px;
+	}
+	ul.arrow li::before{
+  		content: "\2794";
+  		color: #225c4d;
+  		display: inline-block;
+  		margin-right: 11px;
+	}
+</style>
+</head>
+<body>
+<p>
+	<div style="position:relative; top:280px;">
+		Individuelle Anwendungsentwicklung - Java Enterprise, Web, Mobile
+		<ul class="bullet" style="list-style:none;">
+			<li>seit 2005 <span class="r">&#160;&#160;&#160;♦&#160;&#160;&#160;</span> in Köln <span class="r">&#160;&#160;&#160;♦&#160;&#160;&#160;</span> für alle Branchen <span class="r">&#160;&#160;&#160;♦&#160;&#160;&#160;</span> <img style="position:relative; top:17px" src="images/anderscore/goldschmiede.png" height="60"></li>
+			<li>nach Aufwand & zum Festpreis</li>
+		</ul>
+		<div class="fragment">
+			<ul class="checkmark" style="list-style:none;">
+				<li>Digitalisierung / Prozesse / Integration</li>
+				<li>Migration</li>
+				<li>Neuentwicklung</li>
+				<li>Notfall / kritische Situationen</li>
+			</ul><br>
+			<ul class="arrow" style="list-style:none;">
+				<li>pragmatisch, zielgerichtet, zuverlässig</li>
+			</ul>
+		</div>
+	</div>
+</p>
+<p class="fragment">
+	<img style="overflow:hidden; position:relative; bottom:30px; left:830px;" src="images/anderscore/Bereiche.png" height="600">
+</p>
+<p>
+	<div class="fragment">
+		<div style="position:relative; bottom:270px;">
+		Kompletter SW Life Cycle<br>
+			<ul class="bullet" style="list-style:none;">
+				<li>Projektmanagement / agile Methodik</li>
+				<li>Anforderungsanalyse</li>
+				<li>Architektur & SW-Design</li>
+				<li>Implementierung & Testautomation</li>
+				<li>Studien & Seminare</li>
+			</ul>
+		</div>
+		<div style="position:relative; left:850px; bottom:330px; color:#225c4d; font-weight:bold">
+			... und für Sie? Sprechen Sie uns an!
+		</div>
+	</div>
+</p>
+</body>
+</p></div></section>
+<section id="_test_pyramide"><h2>Test-Pyramide</h2><div class="imageblock" style=""><img src="images/test_pyramide.png" alt="test pyramide" height="800"></div></section>
+<section id="_warum_integrationstests" class="columns text-center"><h2>Warum Integrationstests?</h2><div class="imageblock" style=""><img src="images/unit-test-vs-integration-test.gif" alt="unit test vs integration test" height="800"></div></section>
+<section id="_herausforderung_integrationstest" class="columns text-center"><h2>Herausforderung Integrationstest</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p><strong>Fremdsysteme</strong></p><div class="ulist"><ul><li><p>Erreichbarkeit</p></li><li><p>Datenhoheit</p></li><li><p>Zustand</p></li><li><p>Performance</p></li><li><p>Nebenläufigkeit</p></li></ul></div></li></ul></div></div></div>
+<div class="openblock"><div class="content"><div class="ulist"><ul><li><p><strong>Unterschiedliche Umgebungen</strong></p><div class="ulist"><ul><li><p>Software</p></li><li><p>Versionen</p></li><li><p>Datenbankschema</p></li><li><p>Konfiguration</p></li></ul></div></li></ul></div></div></div></section>
+<section id="_datenbank_erreichbarkeit"><h2>Datenbank-Erreichbarkeit</h2><div class="imageblock" style=""><img src="images/single_user.png" alt="single user" height="694"></div></section>
+<section id="_datenbank_erreichbarkeit_2"><h2>Datenbank-Erreichbarkeit</h2><div class="imageblock" style=""><img src="images/multi_user.png" alt="multi user" height="800"></div></section>
+<section id="_datenbank_erreichbarkeit_3"><h2>Datenbank-Erreichbarkeit</h2><div class="imageblock" style=""><img src="images/multi_user_2.png" alt="multi user 2" height="800"></div></section>
+<section id="_datenbank_erreichbarkeit_4"><h2>Datenbank-Erreichbarkeit</h2><div class="imageblock" style=""><img src="images/test_failed.png" alt="test failed" height="894"></div></section>
+<section id="_was_würde_uns_helfen" class="columns text-center"><h2>Was würde uns helfen?</h2><div class="ulist"><ul><li><p>Einheitlichkeit</p></li><li><p>Reproduzierbarkeit</p></li><li><p>Kontrolle</p></li><li><p>Lokalität</p></li><li><p>Nähe zur Produktion</p></li></ul></div></section>
+<section id="_testcontainers" class="columns text-center"><h2>Testcontainers</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p><strong>Java Library</strong></p></li><li><p><strong>MIT Lizenz</strong></p></li><li><p><strong>Aktuelle Version:</strong> 1.15.3 (April 2021)</p></li></ul></div></div></div>
+<div class="openblock"><div class="content"><div class="ulist"><ul><li><p><strong>Einsatzszenarien</strong></p><div class="ulist"><ul><li><p>Integration Tests (DB, Message Broker, etc.)</p></li><li><p>Anwendungstests (UI, Use Cases)</p></li></ul></div></li><li><p><strong>Technologien</strong></p><div class="ulist"><ul><li><p>Docker</p></li><li><p>JUnit 4/5</p></li></ul></div></li></ul></div></div></div></section>
+<section id="_beispiel_code"><h2>Beispiel: Code</h2><pre class="CodeRay listingblock"><code class="java language-java"><span class="annotation">@SpringJUnitConfig</span>(TestConfig.class)
+<span class="annotation">@ActiveProfiles</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
+<span class="annotation">@ExtendWith</span>(DbContainerExtension.class)
+<span class="annotation">@TestExecutionListeners</span>({DependencyInjectionTestExecutionListener.class, FlywayTestExecutionListener.class})
+<span class="directive">public</span> <span class="type">class</span> <span class="class">SchedulerServiceTest</span> {
+
+    <span class="annotation">@Inject</span>
+    <span class="directive">private</span> SchedulerService schedulerService;
+
+    <span class="annotation">@Test</span>
+    <span class="annotation">@FlywayTest</span>(locationsForMigrate = {<span class="string"><span class="delimiter">&quot;</span><span class="content">db/scheduler_data</span><span class="delimiter">&quot;</span></span>})
+    <span class="directive">public</span> <span class="type">void</span> findAll() {
+        <span class="predefined-type">List</span>&lt;Scheduler&gt; result = schedulerService.findAll();
+
+        assertEquals(<span class="integer">2</span>, result.size());
+    }
+
+    <span class="annotation">@Test</span>
+    <span class="directive">public</span> <span class="type">void</span> store() {
+        Scheduler scheduler = <span class="keyword">new</span> Scheduler();
+        scheduler.setName(<span class="string"><span class="delimiter">&quot;</span><span class="content">ElBarto</span><span class="delimiter">&quot;</span></span>);
+
+        schedulerService.store(scheduler);
+
+        Optional&lt;Scheduler&gt; saveScheduler = schedulerService.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">ElBarto</span><span class="delimiter">&quot;</span></span>);
+
+        assertTrue(saveScheduler.isPresent());
+        assertEquals(saveScheduler.get().getName(), scheduler.getName());
+    }
+}</code></pre></section>
+<section id="_beispiel_docker_starten"><h2>Beispiel: Docker starten</h2><pre class="CodeRay listingblock"><code>        ✔ Docker version should be at least 1.6.0
+18:48:32.713 [main] DEBUG com.github.dockerjava.core.command.AbstrDockerCmd - Cmd: 6458137d3a598b22c93a71cf8ae31fb8ae8c9a36ce4e7b73d91d3a1a6c68c848,&lt;null&gt;,true,&lt;null&gt;,&lt;null&gt;,&lt;null&gt;,&lt;null&gt;,{df,-P},&lt;null&gt;,&lt;null&gt;,com.github.dockerjava.core.exec.ExecCreateCmdExec@2b4786dd
+18:48:32.923 [tc-okhttp-stream-1322484262] DEBUG com.github.dockerjava.core.command.ExecStartResultCallback - STDOUT: Filesystem           1024-blocks    Used Available Capacity Mounted on
+overlay              490691512 113658060 352037972  24% /
+tmpfs                    65536         0     65536   0% /dev
+tmpfs                  8081808         0   8081808   0% /sys/fs/cgroup
+/dev/nvme0n1p2       490691512 113658060 352037972  24% /etc/resolv.conf
+/dev/nvme0n1p2       490691512 113658060 352037972  24% /etc/hostname
+/dev/nvme0n1p2       490691512 113658060 352037972  24% /etc/hosts
+shm                      65536         0     65536   0% /dev/shm
+tmpfs                  1616364      3928   1612436   0% /run/docker.sock
+tmpfs                  8081808         0   8081808   0% /proc/asound
+tmpfs                  8081808         0   8081808   0% /proc/acpi
+tmpfs                    65536         0     65536   0% /proc/kcore
+tmpfs                    65536         0     65536   0% /proc/keys
+tmpfs                    65536         0     65536   0% /proc/timer_list
+tmpfs                    65536         0     65536   0% /proc/sched_debug
+tmpfs                  8081808         0   8081808   0% /proc/scsi
+tmpfs                  8081808         0   8081808   0% /sys/firmware
+        ✔ Docker environment should have more than 2GB free disk space
+18:48:32.955 [main] DEBUG com.github.dockerjava.core.command.AbstrDockerCmd - Cmd: ListImagesCmdImpl[imageNameFilter=&lt;null&gt;,showAll=false,filters=com.github.dockerjava.core.util.FiltersBuilder@0,execution=com.github.dockerjava.core.exec.ListImagesCmdExec@22bd2039]
+18:48:32.967 [main] DEBUG 🐳 [postgres:9.6.12] - Starting container: postgres:9.6.12
+18:48:32.967 [main] DEBUG 🐳 [postgres:9.6.12] - Trying to start container: postgres:9.6.12
+18:48:32.967 [main] DEBUG 🐳 [postgres:9.6.12] - Trying to start container: postgres:9.6.12 (attempt 1/1)
+18:48:32.967 [main] DEBUG 🐳 [postgres:9.6.12] - Starting container: postgres:9.6.12
+18:48:32.967 [main] INFO 🐳 [postgres:9.6.12] - Creating container for image: postgres:9.6.12</code></pre></section>
+<section id="_beispiel_container_starten"><h2>Beispiel: Container starten</h2><pre class="CodeRay listingblock"><code>🐳 [postgres:9.6.12] - Starting container with ID: b447ee79d8ab49fb0a92edc05fc571abbbe02291746b5fbef2a3498f33c0c337
+com.github.dockerjava.core.command.AbstrDockerCmd - Cmd: b447ee79d8ab49fb0a92edc05fc571abbbe02291746b5fbef2a3498f33c0c337,com.github.dockerjava.core.exec.StartContainerCmdExec@42fcc7e6
+🐳 [postgres:9.6.12] - Container postgres:9.6.12 is starting: b447ee79d8ab49fb0a92edc05fc571abbbe02291746b5fbef2a3498f33c0c337
+com.github.dockerjava.core.command.AbstrDockerCmd - Cmd: b447ee79d8ab49fb0a92edc05fc571abbbe02291746b5fbef2a3498f33c0c337,false,com.github.dockerjava.core.exec.InspectContainerCmdExec@5da7cee2
+com.github.dockerjava.core.exec.InspectContainerCmdExec - GET: OkHttpWebTarget(okHttpClient=org.testcontainers.shaded.okhttp3.OkHttpClient@19569ebd, baseUrl=http://docker.socket/, path=[/containers/b447ee79d8ab49fb0a92edc05fc571abbbe02291746b5fbef2a3498f33c0c337/json], queryParams={})
+com.github.dockerjava.core.command.AbstrDockerCmd - Cmd: b447ee79d8ab49fb0a92edc05fc571abbbe02291746b5fbef2a3498f33c0c337,false,com.github.dockerjava.core.exec.InspectContainerCmdExec@120ddb7
+com.github.dockerjava.core.exec.InspectContainerCmdExec - GET: OkHttpWebTarget(okHttpClient=org.testcontainers.shaded.okhttp3.OkHttpClient@19569ebd, baseUrl=http://docker.socket/, path=[/containers/b447ee79d8ab49fb0a92edc05fc571abbbe02291746b5fbef2a3498f33c0c337/json], queryParams={})</code></pre></section>
+<section id="_beispiel_hikari_konfiguration"><h2>Beispiel: Hikari Konfiguration</h2><pre class="CodeRay listingblock"><code>com.zaxxer.hikari.HikariConfig - HikariPool-1 - configuration:
+com.zaxxer.hikari.HikariConfig - dataSourceProperties............{password=&lt;masked&gt;}
+com.zaxxer.hikari.HikariConfig - driverClassName................."org.postgresql.Driver"
+com.zaxxer.hikari.HikariConfig - healthCheckProperties...........{}
+com.zaxxer.hikari.HikariConfig - healthCheckRegistry.............none
+com.zaxxer.hikari.HikariConfig - idleTimeout.....................600000
+com.zaxxer.hikari.HikariConfig - initializationFailTimeout.......1
+com.zaxxer.hikari.HikariConfig - isolateInternalQueries..........false
+com.zaxxer.hikari.HikariConfig - jdbcUrl.........................jdbc:postgresql://localhost:32781/scheduler?loggerLevel=OFF
+com.zaxxer.hikari.HikariConfig - leakDetectionThreshold..........0
+com.zaxxer.hikari.HikariConfig - maxLifetime.....................1800000
+com.zaxxer.hikari.HikariConfig - maximumPoolSize.................10
+com.zaxxer.hikari.HikariConfig - metricRegistry..................none
+com.zaxxer.hikari.HikariConfig - metricsTrackerFactory...........none
+com.zaxxer.hikari.HikariConfig - minimumIdle.....................10
+com.zaxxer.hikari.HikariConfig - password........................&lt;masked&gt;
+com.zaxxer.hikari.HikariConfig - poolName........................"HikariPool-1"
+com.zaxxer.hikari.HikariConfig - username........................"postgres"
+com.zaxxer.hikari.HikariConfig - validationTimeout...............5000
+com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2b917fb0
+com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.</code></pre></section>
+<section id="_beispiel_flyway"><h2>Beispiel: Flyway</h2><pre class="CodeRay listingblock"><code>org.flywaydb.core.internal.scanner.classpath.ClassPathScanner - Found resource: db/migration/V001__init_scheduler_table.sql
+org.flywaydb.core.internal.scanner.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+org.flywaydb.core.internal.callback.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+org.flywaydb.core.internal.util.FeatureDetector - Spring Jdbc available: true
+org.flywaydb.core.internal.command.DbValidate - Validating migrations ...
+org.flywaydb.core.internal.sqlscript.SqlScript - Parsing V001__init_scheduler_table.sql ...
+org.flywaydb.core.internal.sqlscript.SqlScript - Found statement at line 1: CREATE TABLE scheduler
+(
+  id       serial              NOT NULL,
+  name     varchar(255)        NOT NULL,
+  PRIMARY KEY (id)
+)
+org.flywaydb.core.internal.sqlscript.SqlScript - Found statement at line 8: comment on table scheduler
+  is 'Scheduler that runs to create tickets in wekan'
+[main] DEBUG org.flywaydb.core.internal.sqlscript.SqlScript - Found statement at line 11: create index scheduler_name_index
+  on scheduler (name)
+org.flywaydb.core.internal.scanner.Scanner - Filtering out resource: db/migration/V001__init_scheduler_table.sql (filename: V001__init_scheduler_table.sql)
+org.flywaydb.core.internal.command.DbValidate - Successfully validated 1 migration (execution time 00:00.019s)
+org.flywaydb.core.internal.command.DbSchemas - Schema "public" already exists. Skipping schema creation.
+org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory - Creating Schema History table: "public"."flyway_schema_history"
+org.flywaydb.core.internal.sqlscript.SqlScript - Parsing createMetaDataTable.sql ...
+org.flywaydb.core.internal.sqlscript.SqlScript - Found statement at line 17: CREATE TABLE "public"."flyway_schema_history" (
+    "installed_rank" INT NOT NULL,
+    "version" VARCHAR(50),
+    "description" VARCHAR(200) NOT NULL,
+    "type" VARCHAR(20) NOT NULL,
+    "script" VARCHAR(1000) NOT NULL,
+    "checksum" INTEGER,
+    "installed_by" VARCHAR(100) NOT NULL,
+    "installed_on" TIMESTAMP NOT NULL DEFAULT now(),
+    "execution_time" INTEGER NOT NULL,
+    "success" BOOLEAN NOT NULL
+)</code></pre></section>
+<section id="_beispiel_junit_test"><h2>Beispiel: JUnit-Test</h2><pre class="CodeRay listingblock"><code>org.hibernate.hql.internal.ast.QueryTranslatorImpl - HQL: select generatedAlias0 from com.anderscore.testcontainers.data.Scheduler as generatedAlias0 where generatedAlias0.name=:name
+org.hibernate.hql.internal.ast.QueryTranslatorImpl - SQL: select scheduler0_.id as id1_0_, scheduler0_.name as name2_0_ from Scheduler scheduler0_ where scheduler0_.name=?
+org.hibernate.hql.internal.ast.ErrorTracker - throwQueryException() : no errors
+com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4c341efc
+com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - After adding stats (total=9, active=0, idle=9, waiting=0)
+com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@645706f8
+com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - After adding stats (total=10, active=0, idle=10, waiting=0)
+org.hibernate.SQL - select scheduler0_.id as id1_0_, scheduler0_.name as name2_0_ from Scheduler scheduler0_ where scheduler0_.name=?
+Hibernate: select scheduler0_.id as id1_0_, scheduler0_.name as name2_0_ from Scheduler scheduler0_ where scheduler0_.name=?</code></pre></section>
+<section id="_was_kann_testcontainers_sonst_noch" class="columns text-center"><h2>Was kann Testcontainers sonst noch?</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p><strong>GenericContainer</strong></p><div class="ulist"><ul><li><p>Fertiges Docker Image</p></li><li><p>On-the-fly Docker Image (Dockerfile DSL)</p></li><li><p>Ausführen oder Überschreiben von Commands</p></li></ul></div></li></ul></div></div></div>
+<div class="openblock"><div class="content"><div class="ulist"><ul><li><p><strong>Fluent API</strong></p><div class="ulist"><ul><li><p>Ports, Environment Variables</p></li><li><p>Shell Commands</p></li><li><p>Log Consumer</p></li></ul></div></li></ul></div></div></div>
+<div class="openblock"><div class="content"><pre class="CodeRay listingblock"><code class="java language-java">GenericContainer alpine =
+    <span class="keyword">new</span> GenericContainer(DockerImageName.parse(<span class="string"><span class="delimiter">&quot;</span><span class="content">alpine:3.2</span><span class="delimiter">&quot;</span></span>))
+            .withExposedPorts(<span class="integer">80</span>)
+            .withEnv(<span class="string"><span class="delimiter">&quot;</span><span class="content">MAGIC_NUMBER</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">42</span><span class="delimiter">&quot;</span></span>)
+            .withCommand(<span class="string"><span class="delimiter">&quot;</span><span class="content">/bin/sh</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">-c</span><span class="delimiter">&quot;</span></span>,
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">while true; do echo </span><span class="char">\&quot;</span><span class="content">$MAGIC_NUMBER</span><span class="char">\&quot;</span><span class="content"> | nc -l -p 80; done</span><span class="delimiter">&quot;</span></span>);</code></pre></div></div></section>
+<section id="_was_kann_testcontainers_sonst_noch_2" class="columns text-center"><h2>Was kann Testcontainers sonst noch?</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p><strong>Netzwerk</strong></p><div class="ulist"><ul><li><p>Externe Ports zufällig</p></li><li><p>Zugang zu Host Ports möglich</p></li><li><p>Container-Netzwerke</p></li></ul></div></li></ul></div>
+<pre class="CodeRay listingblock"><code class="java language-java">Network network = Network.newNetwork();
+
+GenericContainer foo = <span class="keyword">new</span> GenericContainer(...)
+    .withNetwork(network)
+    .withNetworkAliases(<span class="string"><span class="delimiter">&quot;</span><span class="content">foo</span><span class="delimiter">&quot;</span></span>);
+
+GenericContainer bar = <span class="keyword">new</span> GenericContainer(...)
+    .withNetwork(network);</code></pre></div></div></section>
+<section id="_was_kann_testcontainers_sonst_noch_3" class="columns"><h2>Was kann Testcontainers sonst noch?</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p><strong>Logs</strong></p><div class="ulist"><ul><li><p>Auslesen (stdout, stderr)</p></li><li><p>Streamen</p></li></ul></div></li></ul></div>
+<pre class="CodeRay listingblock"><code class="java language-java">Slf4jLogConsumer logConsumer = <span class="keyword">new</span> Slf4jLogConsumer(LOGGER);
+container.followOutput(logConsumer);</code></pre></div></div></section>
+<section id="_module" class="columns"><h2>Module</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p>DBMS (u.a. PostgreSQL, MySQL, DB2, Cassandra, Neo4j)</p></li><li><p>ElasticSearch</p></li><li><p>Kafka</p></li><li><p>Solr</p></li><li><p>HashiCorp Vault</p></li><li><p>Nginx</p></li><li><p>Webdriver (Selenium, inkl. VNC)</p></li></ul></div></div></div>
+<div class="openblock"><div class="content"><div class="imageblock" style=""><img src="images/container.png" alt="container" height="450"></div></div></div></section>
+<section id="_datenbank_extension"><h2>Datenbank - Extension</h2><pre class="CodeRay listingblock"><code class="java language-java"><span class="annotation">@SpringJUnitConfig</span>(TestConfig.class)
+<span class="annotation">@ActiveProfiles</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
+<span class="annotation">@ExtendWith</span>(DbContainerExtension.class)
+<span class="annotation">@TestExecutionListeners</span>({DependencyInjectionTestExecutionListener.class, FlywayTestExecutionListener.class})
+<span class="directive">public</span> <span class="type">class</span> <span class="class">SchedulerServiceTest</span> {</code></pre>
+<pre class="CodeRay listingblock"><code class="java language-java"><span class="directive">public</span> <span class="type">class</span> <span class="class">DbContainerExtension</span> <span class="directive">implements</span> AfterEachCallback {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> afterEach(ExtensionContext extensionContext) <span class="directive">throws</span> <span class="exception">Exception</span> {
+        DatabaseContainerHolder containerHolder = SpringExtension.getApplicationContext(extensionContext)
+                .getBean(DatabaseContainerHolder.class);
+
+        Flyway flyWay = SpringExtension.getApplicationContext(extensionContext).getBean(Flyway.class);
+
+        containerHolder.refresh();
+        flyWay.migrate();
+    }
+}</code></pre></section>
+<section id="_konfiguration"><h2>Konfiguration</h2><pre class="CodeRay listingblock"><code class="java language-java"><span class="annotation">@Configuration</span>
+<span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
+<span class="annotation">@Import</span>(TestPersistenceConfig.class)
+<span class="annotation">@ComponentScan</span>(basePackageClasses = {SchedulerMapper.class, SchedulerService.class})
+<span class="annotation">@EnableJpaRepositories</span>(basePackageClasses = SchedulerRepository.class)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">TestConfig</span> {
+}</code></pre></section>
+<section id="_konfiguration_2"><h2>Konfiguration</h2><pre class="CodeRay listingblock"><code class="java language-java"><span class="annotation">@ComponentScan</span>(basePackageClasses = DatabaseContainerHolder.class)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">TestPersistenceConfig</span> {
+
+    <span class="annotation">@Inject</span>
+    <span class="directive">private</span> Environment env;
+
+    <span class="annotation">@Bean</span>
+    <span class="directive">public</span> Flyway flyway(DatabaseContainerHolder containerHolder) {
+        JdbcDatabaseContainer&lt;?&gt; dbContainer = containerHolder.get();
+
+        Flyway flyway = Flyway.configure().dataSource(dbContainer.getJdbcUrl(),
+                dbContainer.getUsername(),
+                dbContainer.getPassword())
+                .load();
+
+        flyway.migrate();
+
+        <span class="keyword">return</span> flyway;
+    }
+
+    <span class="annotation">@Bean</span>
+    <span class="directive">public</span> <span class="predefined-type">DataSource</span> dataSource(DatabaseContainerHolder containerHolder) {
+        JdbcDatabaseContainer&lt;?&gt; dbContainer = containerHolder.get();
+
+        HikariConfig hikariConfig = <span class="keyword">new</span> HikariConfig();
+        hikariConfig.setJdbcUrl(dbContainer.getJdbcUrl());
+        hikariConfig.setUsername(dbContainer.getUsername());
+        hikariConfig.setPassword(dbContainer.getPassword());
+        hikariConfig.setDriverClassName(env.getProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc.driverClassName</span><span class="delimiter">&quot;</span></span>));
+
+        <span class="keyword">return</span> <span class="keyword">new</span> HikariDataSource(hikariConfig);
+    }
+}</code></pre></section>
+<section id="_konfiguration_3"><h2>Konfiguration</h2><div class="title">DatabaseContainerHolder.java</div><pre class="CodeRay listingblock"><code class="java language-java">    <span class="directive">private</span> JdbcDatabaseContainer&lt;?&gt; newContainer(){
+        JdbcDatabaseContainer&lt;?&gt; container = <span class="keyword">new</span> PostgreSQLContainer&lt;&gt;()
+                .withDatabaseName(DB_SCHEMA)
+                .withUsername(DB_USER)
+                .withPassword(DB_PASSWD);
+
+        <span class="keyword">if</span> (hostDbPort &gt; <span class="integer">0</span>){
+            container.setPortBindings(asList(hostDbPort + <span class="string"><span class="delimiter">&quot;</span><span class="content">:</span><span class="delimiter">&quot;</span></span> + CONTAINER_DB_PORT));
+        }
+
+        container.start();
+
+        <span class="keyword">return</span> container;
+    }</code></pre>
+<div class="title">DatabaseContainerHolder.java</div><pre class="CodeRay listingblock"><code class="java language-java">    <span class="directive">public</span> <span class="type">void</span> refresh(){
+        <span class="keyword">if</span> (instance != <span class="predefined-constant">null</span> &amp;&amp; instance.isRunning()){
+            instance.stop();
+        }
+
+        instance = newContainer();
+        hostDbPort = instance.getMappedPort(CONTAINER_DB_PORT);
+    }</code></pre></section>
+<section id="_front_end_wicket"><h2>Front-End - Wicket</h2><div class="imageblock" style=""><img src="images/wekan_frontend.png" alt="wekan frontend" height="600"></div>
+<div class="imageblock" style=""><img src="images/seleniumg.png" alt="seleniumg" height="150"></div></section>
+<section id="_front_end_test"><h2>Front-End - Test</h2><pre class="CodeRay listingblock"><code class="java language-java"><span class="annotation">@SpringBootTest</span>(webEnvironment = RANDOM_PORT)
+<span class="annotation">@ActiveProfiles</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
+<span class="annotation">@ExtendWith</span>(DbContainerExtension.class)
+<span class="annotation">@ExtendWith</span>(WebDriverContainerExtension.class)
+<span class="annotation">@ExtendWith</span>(ServletContainerContextParameterResolver.class)
+<span class="annotation">@ExtendWith</span>(WebDriverParameterResolver.class)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">WekanSchedulerTest</span> {
+
+  <span class="annotation">@Test</span>
+  <span class="directive">public</span> <span class="type">void</span> createScheduler(ServletContainerContext context, RemoteWebDriver webDriver) {
+      webDriver.get(context.getHttpUrl());
+
+      <span class="comment">// SchedulerOverviewPage</span>
+      assertEquals(<span class="string"><span class="delimiter">&quot;</span><span class="content">Scheduler</span><span class="delimiter">&quot;</span></span>, webDriver.findElement(By.tagName(<span class="string"><span class="delimiter">&quot;</span><span class="content">h1</span><span class="delimiter">&quot;</span></span>)).getText());
+      webDriver.findElement(By.id(<span class="string"><span class="delimiter">&quot;</span><span class="content">new</span><span class="delimiter">&quot;</span></span>)).click();
+
+      <span class="comment">// SchedulerCreationPage</span>
+      assertEquals(<span class="string"><span class="delimiter">&quot;</span><span class="content">Scheduler anlegen</span><span class="delimiter">&quot;</span></span>, webDriver.findElement(By.tagName(<span class="string"><span class="delimiter">&quot;</span><span class="content">h1</span><span class="delimiter">&quot;</span></span>)).getText());
+      WebElement nameInput = webDriver.findElement(By.id(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>));
+      nameInput.sendKeys(<span class="string"><span class="delimiter">&quot;</span><span class="content">TestScheduler</span><span class="delimiter">&quot;</span></span>);
+      nameInput.submit();
+
+      <span class="comment">// SchedulerOverviewPage</span>
+      assertEquals(<span class="string"><span class="delimiter">&quot;</span><span class="content">Scheduler</span><span class="delimiter">&quot;</span></span>, webDriver.findElement(By.tagName(<span class="string"><span class="delimiter">&quot;</span><span class="content">h1</span><span class="delimiter">&quot;</span></span>)).getText());
+      assertEquals(<span class="string"><span class="delimiter">&quot;</span><span class="content">1</span><span class="delimiter">&quot;</span></span>, webDriver.findElement(By.cssSelector(<span class="string"><span class="delimiter">&quot;</span><span class="content">td:nth-child(1) span</span><span class="delimiter">&quot;</span></span>)).getText());
+      assertEquals(<span class="string"><span class="delimiter">&quot;</span><span class="content">TestScheduler</span><span class="delimiter">&quot;</span></span>, webDriver.findElement(By.cssSelector(<span class="string"><span class="delimiter">&quot;</span><span class="content">td:nth-child(2) span</span><span class="delimiter">&quot;</span></span>)).getText());
+  }
+}</code></pre></section>
+<section id="_konfiguration_4"><h2>Konfiguration</h2><pre class="CodeRay listingblock"><code class="java language-java"><span class="directive">public</span> <span class="type">class</span> <span class="class">WebDriverContainerExtension</span> <span class="directive">implements</span> BeforeEachCallback, AfterEachCallback {
+
+        <span class="annotation">@Override</span>
+        <span class="directive">public</span> <span class="type">void</span> beforeEach(ExtensionContext extensionContext) <span class="directive">throws</span> <span class="exception">Exception</span> {
+                <span class="predefined-type">String</span> serverPort = SpringExtension.getApplicationContext(extensionContext).getEnvironment()
+                                .getProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">local.server.port</span><span class="delimiter">&quot;</span></span>);
+
+                Testcontainers.exposeHostPorts(parseInt(serverPort));
+
+                BrowserWebDriverContainer&lt;?&gt; container = <span class="keyword">new</span> BrowserWebDriverContainer&lt;&gt;()
+                                .withCapabilities(<span class="keyword">new</span> ChromeOptions())
+                                .withRecordingMode(RECORD_FAILING, <span class="keyword">new</span> <span class="predefined-type">File</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">./target/</span><span class="delimiter">&quot;</span></span>));
+
+                container.start();
+
+                extensionContext.getStore(GLOBAL).put(BrowserWebDriverContainer.class.getSimpleName(), container);
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="directive">public</span> <span class="type">void</span> afterEach(ExtensionContext extensionContext) <span class="directive">throws</span> <span class="exception">Exception</span> {
+                BrowserWebDriverContainer&lt;?&gt; container = extensionContext.getStore(GLOBAL)
+                                .get(BrowserWebDriverContainer.class.getSimpleName(), BrowserWebDriverContainer.class);
+
+                container.stop();
+        }
+}</code></pre></section>
+<section id="_pitfalls" class="columns text-center"><h2>Pitfalls</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p>Zufällige Ports</p></li><li><p>Fixe DataSource im SpringContext</p></li><li><p>Kommunikation mit anderen Containern und Host</p></li></ul></div></div></div>
+<div class="openblock"><div class="content"><div class="imageblock" style=""><img src="images/pitfalls.jpg" alt="pitfalls" height="350"></div></div></div></section>
+<section id="_the_good_the_bad_the_ugly"><h2>The good, the bad &amp; the ugly</h2><div class="imageblock" style=""><img src="images/the_good_the_bad_the_ugly.jpg" alt="the good the bad the ugly" height="700"></div></section>
+<section id="_the_good" class="columns"><h2>The good</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p>Einfache Verwendung</p></li><li><p>Übersichtliche API</p></li><li><p>Verständliche Dokumentation</p></li><li><p>Gute Integration mit JUnit 4 und 5</p></li><li><p>Vielfältig einsetzbar</p></li></ul></div></div></div>
+<div class="openblock"><div class="content"><div class="imageblock" style=""><img src="images/thumb_up.png" alt="thumb up" height="500"></div></div></div></section>
+<section id="_the_bad" class="columns"><h2>The bad</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p>Performance</p></li><li><p>Eingeschränkte Integration mit Spring</p></li><li><p>Keine parallele Testausführung</p></li></ul></div></div></div>
+<div class="openblock"><div class="content"><div class="imageblock" style=""><img src="images/thumb_down.png" alt="thumb down" height="500"></div></div></div></section>
+<section id="_the_ugly" class="columns"><h2>The ugly</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p>Internes Datenmodell</p></li></ul></div>
+<pre class="CodeRay listingblock"><code class="java language-java"><span class="directive">public</span> <span class="type">class</span> <span class="class">PostgreSQLContainer</span>&lt;SELF <span class="directive">extends</span> PostgreSQLContainer&lt;SELF&gt;&gt; <span class="directive">extends</span> JdbcDatabaseContainer&lt;SELF&gt; {
+[...]
+}</code></pre>
+<pre class="CodeRay listingblock"><code class="java language-java">JdbcDatabaseContainer&lt;?&gt; container = <span class="keyword">new</span> PostgreSQLContainer&lt;&gt;();</code></pre></div></div>
+<div class="openblock"><div class="content"><div class="imageblock" style=""><img src="images/angry.jpg" alt="angry" height="500"></div></div></div></section>
+<section id="_links" class="columns text-center"><h2>Links</h2><div class="openblock"><div class="content"><div class="ulist"><ul><li><p>Testcontainers Dokumentation: <a href="https://www.testcontainers.org" class="bare">https://www.testcontainers.org</a></p></li><li><p>Docker Dokumentation: <a href="https://docs.docker.com" class="bare">https://docs.docker.com</a></p></li><li><p>Vortrag Sergei Egorov (Mitentwickler Testcontainers): <a href="https://www.youtube.com/watch?v=rv-NxOTMvDQ" class="bare">https://www.youtube.com/watch?v=rv-NxOTMvDQ</a> (Russisch)</p></li><li><p>Folien + Demo: <a href="https://github.com/anderscore-gmbh/dwx-2021.06" class="bare">https://github.com/anderscore-gmbh/dwx-2021.06</a></p></li></ul></div></div></div></section>
+<section id="_fragen" class="columns text-center"><h2>Fragen?</h2><div class="openblock"><div class="content"><div class="paragraph"><p><span class="image"><img src="images/question.jpg" alt="question" width="750" height="750"></span></p></div></div></div></section>
+<section id="_ende" class="text-center"><h2>Ende</h2><div class="paragraph heading margin-bottom-wide"><p>Vielen Dank!</p></div>
+<div class="paragraph"><p><span class="image"><img src="images/DWX.jpg.webp" alt="DWX.jpg" width="2000" height="250"></span></p></div>
+<div class="imageblock" style=""><img src="images/anderscore/anderScore_white.jpg" alt="anderScore white" width="900"></div>
+<div class="openblock social-media"><div class="content"><div class="paragraph"><p><span class="image"><img src="images/social/twitter.png" alt="twitter" height="30"></span>
+@anderScoreGmbH
+<span class="image"><img src="images/social/facebook.png" alt="facebook" height="30"></span>
+anderScore.company
+<span class="image"><img src="images/social/meetup.svg" alt="meetup" height="30"></span>
+Java_Meetup_anderscore</p></div></div></div></section></div></div><script src="reveal.js-3.9.2/lib/js/head.min.js"></script><script src="reveal.js-3.9.2/js/reveal.js"></script><script>// See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
+Reveal.initialize({
+  // Display controls in the bottom right corner
+  controls: true,
+  // Display a presentation progress bar
+  progress: true,
+  // Display the page number of the current slide
+  slideNumber: true,
+  // Push each slide change to the browser history
+  history: true,
+  // Enable keyboard shortcuts for navigation
+  keyboard: true,
+  // Enable the slide overview mode
+  overview: true,
+  // Vertical centering of slides
+  center: true,
+  // Enables touch navigation on devices with touch input
+  touch: true,
+  // Loop the presentation
+  loop: false,
+  // Change the presentation direction to be RTL
+  rtl: false,
+  // Turns fragments on and off globally
+  fragments: true,
+  // Flags if the presentation is running in an embedded mode,
+  // i.e. contained within a limited portion of the screen
+  embedded: false,
+  // Number of milliseconds between automatically proceeding to the
+  // next slide, disabled when set to 0, this value can be overwritten
+  // by using a data-autoslide attribute on your slides
+  autoSlide: 0,
+  // Stop auto-sliding after user input
+  autoSlideStoppable: true,
+  // Enable slide navigation via mouse wheel
+  mouseWheel: true,
+  // Hides the address bar on mobile devices
+  hideAddressBar: true,
+  // Opens links in an iframe preview overlay
+  previewLinks: false,
+  // Theme (e.g., beige, black, league, night, serif, simple, sky, solarized, white)
+  // NOTE setting the theme in the config no longer works in reveal.js 3.x
+  //theme: Reveal.getQueryHash().theme || 'anderscore',
+  // Transition style (e.g., none, fade, slide, convex, concave, zoom)
+  transition: Reveal.getQueryHash().transition || 'linear',
+  // Transition speed (e.g., default, fast, slow)
+  transitionSpeed: 'default',
+  // Transition style for full page slide backgrounds (e.g., none, fade, slide, convex, concave, zoom)
+  backgroundTransition: 'fade',
+  // Number of slides away from the current that are visible
+  viewDistance: 3,
+  // Parallax background image (e.g., "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'")
+  parallaxBackgroundImage: '',
+  // Parallax background size in CSS syntax (e.g., "2100px 900px")
+  parallaxBackgroundSize: '',
+
+  // The "normal" size of the presentation, aspect ratio will be preserved
+  // when the presentation is scaled to fit different resolutions. Can be
+  // specified using percentage units.
+  width: 1728,
+  height: 972,
+
+  // Factor of the display size that should remain empty around the content
+  margin: 0.1,
+
+  // Bounds for smallest/largest possible scale to apply to content
+  minScale: 0.2,
+  maxScale: 1.5,
+
+  // Optional libraries used to extend on reveal.js
+  dependencies: [
+      { src: 'reveal.js-3.9.2/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'reveal.js-3.9.2/plugin/title-footer/title-footer.js', async: true, callback: function()
+          {title_footer.initialize('Testcontainers', 'Daniel Krämer', 'anderScore GmbH • Frankenwerft 35 • 50667 Köln');}},
+      { src: 'reveal.js-3.9.2/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'reveal.js-3.9.2/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      
+      { src: 'reveal.js-3.9.2/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      { src: 'reveal.js-3.9.2/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+  ]
+});</script></body></html>
